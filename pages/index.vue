@@ -2,14 +2,18 @@
 import { ref } from "vue";
 import { Input } from "@/components/ui/input/index.js";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { UserX } from "lucide-react";
 
 const username = ref("");
 const userProfile = ref(null);
 const error = ref("");
+const userNotFound = ref(false);
 
 const fetchGitHubProfile = async () => {
   if (!username.value) {
     error.value = "Please enter a GitHub username";
+    userNotFound.value = false;
     return;
   }
 
@@ -17,14 +21,22 @@ const fetchGitHubProfile = async () => {
     const response = await fetch(
       `https://api.github.com/users/${username.value}`
     );
+    if (response.status === 404) {
+      userNotFound.value = true;
+      userProfile.value = null;
+      error.value = "";
+      return;
+    }
     if (!response.ok) {
-      throw new Error("User not found");
+      throw new Error("An error occurred while fetching the profile");
     }
     userProfile.value = await response.json();
     error.value = "";
-  } catch (err: any) {
+    userNotFound.value = false;
+  } catch (err) {
     error.value = err.message;
     userProfile.value = null;
+    userNotFound.value = false;
   }
 };
 </script>
@@ -61,7 +73,21 @@ const fetchGitHubProfile = async () => {
               Fetch Profile
             </Button>
           </div>
-          <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
+          <Alert v-if="error" variant="destructive" class="mt-4 max-w-[700px]">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{{ error }}</AlertDescription>
+          </Alert>
+        </div>
+
+        <div v-if="userNotFound" class="mt-8 max-w-[700px]">
+          <Alert variant="warning">
+            <UserX class="h-4 w-4" />
+            <AlertTitle>User Not Found</AlertTitle>
+            <AlertDescription>
+              The GitHub user "{{ username }}" could not be found. Please check
+              the username and try again.
+            </AlertDescription>
+          </Alert>
         </div>
 
         <div v-if="userProfile" class="mt-8">
