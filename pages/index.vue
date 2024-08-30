@@ -46,23 +46,19 @@ const fetchGitHubProfile = async () => {
 const downloadAsPDF = async () => {
   if (!cardRef.value) return;
 
-  // Clone the card element to remove the download button
   const cardClone = cardRef.value.cloneNode(true);
   const downloadButton = cardClone.querySelector(".download-button");
   if (downloadButton) {
     downloadButton.remove();
   }
 
-  // Temporarily append the clone to the document body
   document.body.appendChild(cardClone);
 
-  // Capture the card as an image, including the avatar
   const canvas = await html2canvas(cardClone, {
     useCORS: true,
     allowTaint: true,
   });
 
-  // Remove the clone from the document body
   document.body.removeChild(cardClone);
 
   const imgData = canvas.toDataURL("image/png");
@@ -78,44 +74,59 @@ const downloadAsPDF = async () => {
 </script>
 
 <template>
-  <section class="">
-    <div
-      class="flex gap-6 justify-center items-center min-h-[calc(100dvh-100px)]"
-    >
-      <div class="w-1/5 border-2 min-h-[calc(100dvh-100px)] py-32 px-6">
-        <p class="text-2xl font-bold">
+  <div class="flex justify-between items-center py-4 px-32">
+    <h2 class="font-semibold">Nuxt Github Card Creator</h2>
+    <div class="text-sm">
+      Built with Nuxt by
+      <a
+        href="https://faizansaiyed.vercel.app"
+        target="_blank"
+        class="text-blue-500"
+        >Faizanahmed</a
+      >
+    </div>
+  </div>
+  <section class="bg-blue-50 px-28">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <div
+        class="w-full lg:w-1/5 border-b-2 lg:border-b-0 lg:border-r-2 border-gray-200 p-6 lg:py-10"
+      >
+        <p class="text-xl lg:text-xl font-bold text-center lg:text-left">
           Make a beautiful personal card with your GitHub profile
         </p>
       </div>
 
-      <div class="w-4/5 min-h-[calc(100dvh-100px)] flex py-32 px-10 flex-col">
+      <div class="w-full lg:w-4/5 p-6 lg:p-10 flex flex-col">
         <div>
-          <div class="flex gap-6">
+          <div
+            class="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start lg:items-center mb-6"
+          >
             <span
-              class="bg-blue-600 px-4 text-white flex justify-center items-center"
+              class="bg-blue-600 px-4 py-2 text-white flex justify-center items-center rounded-full lg:rounded"
               >1</span
             >
-            <h2 class="text-3xl font-semibold">
+            <h2 class="text-2xl lg:text-3xl font-semibold">
               Please enter your GitHub username
             </h2>
           </div>
-          <div class="max-w-[700px] my-6">
+          <div class="max-w-[700px] mb-6">
             <Input
               v-model="username"
               type="text"
               placeholder="GitHub Username"
+              class="mb-4"
             />
-            <Button @click="fetchGitHubProfile" class="mt-4">
+            <Button @click="fetchGitHubProfile" class="w-full lg:w-auto">
               Fetch Profile
             </Button>
           </div>
-          <Alert v-if="error" variant="destructive" class="mt-4 max-w-[700px]">
+          <Alert v-if="error" variant="destructive" class="mb-6 max-w-[700px]">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{{ error }}</AlertDescription>
           </Alert>
         </div>
 
-        <div v-if="userNotFound" class="mt-8 max-w-[700px]">
+        <div v-if="userNotFound" class="mb-6 max-w-[700px]">
           <Alert variant="warning">
             <UserX class="h-4 w-4" />
             <AlertTitle>User Not Found</AlertTitle>
@@ -129,46 +140,62 @@ const downloadAsPDF = async () => {
         <div
           v-if="userProfile"
           ref="cardRef"
-          class="mt-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-2xl overflow-hidden max-w-[700px]"
+          class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-2xl overflow-hidden max-w-[700px] w-full"
         >
-          <div class="p-8">
-            <div class="flex items-center space-x-6">
+          <div class="p-6 lg:p-8">
+            <div
+              class="flex flex-col lg:flex-row items-center lg:items-start lg:space-x-6"
+            >
               <img
                 :src="userProfile.avatar_url"
                 alt="Profile Picture"
-                class="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+                class="w-24 h-24 lg:w-32 lg:h-32 rounded-full border-4 border-white shadow-lg mb-4 lg:mb-0"
               />
-              <div>
-                <h3 class="text-3xl font-bold text-white">
+              <div class="text-center lg:text-left">
+                <h3 class="text-2xl lg:text-3xl font-bold text-white">
                   {{ userProfile.name }}
                 </h3>
-                <p class="text-xl text-blue-200">@{{ userProfile.login }}</p>
+                <p class="text-lg lg:text-xl text-blue-200">
+                  @{{ userProfile.login }}
+                </p>
               </div>
             </div>
-            <p class="mt-6 text-lg text-white">{{ userProfile.bio }}</p>
+            <p
+              class="mt-6 text-base lg:text-lg text-white text-center lg:text-left"
+            >
+              {{ userProfile.bio }}
+            </p>
             <div class="mt-8 flex justify-between text-blue-100">
               <div class="text-center">
-                <p class="text-3xl font-bold">{{ userProfile.followers }}</p>
-                <p class="text-sm uppercase">Followers</p>
+                <p class="text-2xl lg:text-3xl font-bold">
+                  {{ userProfile.followers }}
+                </p>
+                <p class="text-xs lg:text-sm uppercase">Followers</p>
               </div>
               <div class="text-center">
-                <p class="text-3xl font-bold">{{ userProfile.following }}</p>
-                <p class="text-sm uppercase">Following</p>
+                <p class="text-2xl lg:text-3xl font-bold">
+                  {{ userProfile.following }}
+                </p>
+                <p class="text-xs lg:text-sm uppercase">Following</p>
               </div>
               <div class="text-center">
-                <p class="text-3xl font-bold">{{ userProfile.public_repos }}</p>
-                <p class="text-sm uppercase">Repos</p>
+                <p class="text-2xl lg:text-3xl font-bold">
+                  {{ userProfile.public_repos }}
+                </p>
+                <p class="text-xs lg:text-sm uppercase">Repos</p>
               </div>
             </div>
           </div>
-          <div class="bg-white px-8 py-4 flex justify-between items-center">
-            <p class="text-gray-600">
+          <div
+            class="bg-white px-6 py-4 lg:px-8 flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0"
+          >
+            <p class="text-gray-600 text-sm lg:text-base">
               Created at:
               {{ new Date(userProfile.created_at).toLocaleDateString() }}
             </p>
             <Button
               @click="downloadAsPDF"
-              class="bg-green-500 hover:bg-green-600 download-button"
+              class="bg-green-500 hover:bg-green-600 download-button w-full lg:w-auto"
             >
               <Download class="h-5 w-5 mr-2" />
               Download PDF

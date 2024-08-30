@@ -1,7 +1,33 @@
+<script setup></script>
+
 <template>
   <footer class="bg-gray-900 text-white py-4">
-    <div class="container mx-auto flex justify-center items-center">
-      <p class="text-sm">&copy; 2022 Your Website. All rights reserved.</p>
+    <div class="container mx-auto flex justify-between px-32 items-center">
+      <div>
+        Edit on
+        <a
+          href="https://github.com/Faizanahmedsy/nuxt-github-card-maker"
+          target="_blank"
+          class="text-blue-500"
+        >
+          GitHub</a
+        >
+      </div>
+      <!-- <p class="text-sm">
+        &copy;
+        <span v-if="new Date().getFullYear()"></span>
+        {{ new Date().getFullYear() }} Nuxt Website. All rights reserved. Your
+        Website. All rights reserved.
+      </p> -->
+      <p>
+        Built with Nuxt by
+        <a
+          href="https://faizansaiyed.vercel.app"
+          target="_blank"
+          class="text-blue-500"
+          >Faizanahmed</a
+        >
+      </p>
     </div>
   </footer>
 </template>
