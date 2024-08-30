@@ -2,13 +2,16 @@
 import { ref } from "vue";
 import { Input } from "@/components/ui/input/index.js";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { UserX } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { UserX, Download } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const username = ref("");
 const userProfile = ref(null);
 const error = ref("");
 const userNotFound = ref(false);
+const cardRef = ref(null);
 
 const fetchGitHubProfile = async () => {
   if (!username.value) {
@@ -38,6 +41,39 @@ const fetchGitHubProfile = async () => {
     userProfile.value = null;
     userNotFound.value = false;
   }
+};
+
+const downloadAsPDF = async () => {
+  if (!cardRef.value) return;
+
+  // Clone the card element to remove the download button
+  const cardClone = cardRef.value.cloneNode(true);
+  const downloadButton = cardClone.querySelector(".download-button");
+  if (downloadButton) {
+    downloadButton.remove();
+  }
+
+  // Temporarily append the clone to the document body
+  document.body.appendChild(cardClone);
+
+  // Capture the card as an image, including the avatar
+  const canvas = await html2canvas(cardClone, {
+    useCORS: true,
+    allowTaint: true,
+  });
+
+  // Remove the clone from the document body
+  document.body.removeChild(cardClone);
+
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "px",
+    format: [canvas.width, canvas.height],
+  });
+
+  pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+  pdf.save(`${userProfile.value.login}_github_card.pdf`);
 };
 </script>
 
@@ -90,24 +126,53 @@ const fetchGitHubProfile = async () => {
           </Alert>
         </div>
 
-        <div v-if="userProfile" class="mt-8">
-          <h3 class="text-2xl font-semibold mb-4">GitHub Profile Card</h3>
-          <div class="bg-white shadow-md rounded-lg p-6 max-w-[700px]">
-            <img
-              :src="userProfile.avatar_url"
-              alt="Profile Picture"
-              class="w-24 h-24 rounded-full mb-4"
-            />
-            <h4 class="text-xl font-bold">{{ userProfile.name }}</h4>
-            <p class="text-gray-600">@{{ userProfile.login }}</p>
-            <p class="mt-2">{{ userProfile.bio }}</p>
-            <div class="mt-4 flex gap-4">
-              <p><strong>Followers:</strong> {{ userProfile.followers }}</p>
-              <p><strong>Following:</strong> {{ userProfile.following }}</p>
-              <p>
-                <strong>Public Repos:</strong> {{ userProfile.public_repos }}
-              </p>
+        <div
+          v-if="userProfile"
+          ref="cardRef"
+          class="mt-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-2xl overflow-hidden max-w-[700px]"
+        >
+          <div class="p-8">
+            <div class="flex items-center space-x-6">
+              <img
+                :src="userProfile.avatar_url"
+                alt="Profile Picture"
+                class="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+              />
+              <div>
+                <h3 class="text-3xl font-bold text-white">
+                  {{ userProfile.name }}
+                </h3>
+                <p class="text-xl text-blue-200">@{{ userProfile.login }}</p>
+              </div>
             </div>
+            <p class="mt-6 text-lg text-white">{{ userProfile.bio }}</p>
+            <div class="mt-8 flex justify-between text-blue-100">
+              <div class="text-center">
+                <p class="text-3xl font-bold">{{ userProfile.followers }}</p>
+                <p class="text-sm uppercase">Followers</p>
+              </div>
+              <div class="text-center">
+                <p class="text-3xl font-bold">{{ userProfile.following }}</p>
+                <p class="text-sm uppercase">Following</p>
+              </div>
+              <div class="text-center">
+                <p class="text-3xl font-bold">{{ userProfile.public_repos }}</p>
+                <p class="text-sm uppercase">Repos</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white px-8 py-4 flex justify-between items-center">
+            <p class="text-gray-600">
+              Created at:
+              {{ new Date(userProfile.created_at).toLocaleDateString() }}
+            </p>
+            <Button
+              @click="downloadAsPDF"
+              class="bg-green-500 hover:bg-green-600 download-button"
+            >
+              <Download class="h-5 w-5 mr-2" />
+              Download PDF
+            </Button>
           </div>
         </div>
       </div>
