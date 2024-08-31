@@ -2,7 +2,7 @@
 
 <template>
   <footer class="bg-teal-900 text-white py-4">
-    <div class="container mx-auto flex justify-between px-32 items-center">
+    <div class="container mx-auto flex justify-between px-10 items-center">
       <div>
         Edit on
         <a

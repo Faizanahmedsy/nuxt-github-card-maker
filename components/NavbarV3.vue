@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex justify-between items-center py-4 px-32 bg-teal-200 text-teal-800"
+    class="flex justify-between items-center py-4 px-10 bg-teal-200 text-teal-800"
   >
     <h2 class="font-semibold">Nuxt Github Card Creator</h2>
     <!-- <div class="text-sm">
