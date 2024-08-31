@@ -1,14 +1,14 @@
 <script setup></script>
 
 <template>
-  <footer class="bg-gray-900 text-white py-4">
+  <footer class="bg-teal-900 text-white py-4">
     <div class="container mx-auto flex justify-between px-32 items-center">
       <div>
         Edit on
         <a
           href="https://github.com/Faizanahmedsy/nuxt-github-card-maker"
           target="_blank"
-          class="text-blue-500"
+          class="text-blue-200"
         >
           GitHub</a
         >
@@ -24,7 +24,7 @@
         <a
           href="https://faizansaiyed.vercel.app"
           target="_blank"
-          class="text-blue-500"
+          class="text-blue-200"
           >Faizanahmed</a
         >
       </p>
